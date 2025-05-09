@@ -9,7 +9,7 @@
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
   <script src="sha256.js"></script>
 </head>
-<body>
+<body>  
 
   <h1>QRコード生成と認証チェック</h1>
 
@@ -34,7 +34,22 @@
         <button type="submit">QRコードを生成する</button>
       </form>
 
-      <div id="qrResult"></div>
+      <!-- ✅ QR + 날짜 텍스트 겹치기용 래퍼 -->
+      <div id="qrWrapper" style="position: relative; display: inline-block; margin-top: 20px;">
+        <div id="qrResult"></div>
+        <div id="qrOverlayDate"
+             style="position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    font-size: 24px;
+                    font-weight: bold;
+                    background: white;
+                    padding: 4px 10px;
+                    border-radius: 6px;
+                    pointer-events: none;">
+        </div>
+      </div>
     </section>
 
     <!-- ✅ QR 検証エリア -->
