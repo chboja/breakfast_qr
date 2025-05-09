@@ -31,26 +31,49 @@ document.addEventListener("DOMContentLoaded", () => {
     const days = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
     const data = `${room},${checkIn},${checkOut},${days},${guests}`;
-    const secret = "HOTEL_ONLY_SECRET_KEY"; // ホテル専用の秘密キー
+    const secret = "HOTEL_ONLY_SECRET_KEY";
 
     const hash = await sha256(data + secret);
-    const qrText = `${data},${hash.slice(0, 8)}`; // 先頭8文字のみ使用
+    const qrText = `${data},${hash.slice(0, 8)}`;
 
-    // ✅ 元のページにQRコードを表示
+    // ✅ 텍스트 정보 표시
+    const textInfo = `
+      部屋番号: ${room}<br>
+      チェックイン: ${checkIn}<br>
+      チェックアウト: ${checkOut}<br>
+      宿泊人数: ${guests}人
+    `;
+    document.getElementById("qrTextInfo").innerHTML = textInfo;
+
+    // ✅ QR 코드 생성 (작게)
     const qrResult = document.getElementById("qrResult");
     qrResult.innerHTML = "";
     new QRCode(qrResult, {
       text: qrText,
-      width: 256,
-      height: 256,
+      width: 120,
+      height: 120,
       correctLevel: QRCode.CorrectLevel.L
     });
+  });
 
-    // ✅ チェックアウト日をQR中央に表示（MM/DD形式）
-    const outDate = new Date(checkOut);
-    const outMonth = outDate.getMonth() + 1;
-    const outDay = outDate.getDate();
-    const formattedOutDate = `${outMonth}/${outDay}`;
-    document.getElementById("qrOverlayDate").innerText = formattedOutDate;
+  // ✅ Enter 키 입력 시 키보드 닫기
+  document.getElementById("guests").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault(); // submit 방지
+      e.target.blur(); // 키보드 닫기
+    }
+  });
+
+  // ✅ 입력 외의 영역을 터치하면 키보드 닫기
+  document.addEventListener("touchstart", (e) => {
+    const active = document.activeElement;
+    if (
+      active &&
+      (active.tagName === "INPUT" || active.tagName === "TEXTAREA") &&
+      !e.target.closest("input") &&
+      !e.target.closest("textarea")
+    ) {
+      active.blur();
+    }
   });
 });
