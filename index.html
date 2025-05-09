@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>QR朝食券</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="qr_code.css">
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <script src="sha256.js"></script>
+</head>
+<body>
+
+  <h1>QRコード生成と認証チェック</h1>
+
+  <div class="container">
+
+    <!-- ✅ QR 生成エリア -->
+    <section>
+      <h2>QRコード生成</h2>
+      <form id="qrForm" autocomplete="off">
+        <label for="room">部屋番号</label>
+        <input type="text" id="room" autocomplete="off" required>
+
+        <label for="checkIn">チェックイン日</label>
+        <input type="date" id="checkIn" autocomplete="off" required>
+
+        <label for="checkOut">チェックアウト日</label>
+        <input type="date" id="checkOut" autocomplete="off" required>
+
+        <label for="guests">宿泊人数</label>
+        <input type="number" id="guests" min="1" autocomplete="off" required>
+
+        <button type="submit">QRコードを生成する</button>
+      </form>
+
+      <div id="qrResult"></div>
+    </section>
+
+    <!-- ✅ QR 検証エリア -->
+    <section>
+      <h2>QRコードの真正性確認</h2>
+
+      <label for="qrText">QRコードの内容を貼り付けてください:</label>
+      <textarea id="qrText" rows="6" placeholder="例：203,2025-05-10,2025-05-12,2,2,a8f57d21"></textarea>
+
+      <button onclick="verify()">検証する</button>
+      <p id="verifyResult"></p>
+    </section>
+
+  </div>
+
+  <script src="qr_code.js"></script>
+
+  <!-- ✅ 検証関数 -->
+  <script>
+    async function verify() {
+      const secret = "HOTEL_ONLY_SECRET_KEY"; // ホテルのみが知っている秘密キー
+      const input = document.getElementById("qrText").value.trim();
+      const parts = input.split(",");
+
+      if (parts.length !== 6) {
+        document.getElementById("verifyResult").innerText = "❌ フォーマットが正しくありません。";
+        return;
+      }
+
+      const data = parts.slice(0, 5).join(",");
+      const inputHash = parts[5].trim();
+      const expectedHash = (await sha256(data + secret)).slice(0, 8);
+
+      if (expectedHash === inputHash) {
+        document.getElementById("verifyResult").innerText = "✅ 正規のQRコードです。";
+      } else {
+        document.getElementById("verifyResult").innerText = "❌ 改ざんまたは無効なQRコードです。";
+      }
+    }
+  </script>
+</body>
+</html>
