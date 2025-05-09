@@ -34,21 +34,10 @@
         <button type="submit">QRコードを生成する</button>
       </form>
 
-      <!-- ✅ QR + 날짜 텍스트 겹치기용 래퍼 -->
-      <div id="qrWrapper" style="position: relative; display: inline-block; margin-top: 20px;">
+      <!-- ✅ 정보 + QR 코드 나란히 표시 -->
+      <div id="qrInfoBox" style="display: flex; gap: 30px; align-items: center; margin-top: 30px;">
+        <div id="qrTextInfo" style="font-size: 18px; line-height: 1.8;"></div>
         <div id="qrResult"></div>
-        <div id="qrOverlayDate"
-             style="position: absolute;
-                    top: 50%;
-                    left: 50%;
-                    transform: translate(-50%, -50%);
-                    font-size: 24px;
-                    font-weight: bold;
-                    background: white;
-                    padding: 4px 10px;
-                    border-radius: 6px;
-                    pointer-events: none;">
-        </div>
       </div>
     </section>
 
@@ -70,7 +59,7 @@
   <!-- ✅ 検証関数 -->
   <script>
     async function verify() {
-      const secret = "HOTEL_ONLY_SECRET_KEY"; // ホテルのみが知っている秘密キー
+      const secret = "HOTEL_ONLY_SECRET_KEY";
       const input = document.getElementById("qrText").value.trim();
       const parts = input.split(",");
 
